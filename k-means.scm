@@ -52,36 +52,38 @@
 
 (define k-means
   (lambda (k pts c)
-    (let ((repeat-function (lambda (data) (cons (cpoints-update (car data) (cdr data)) (cdr data))))
-          (repeat-initial (cons (list-map (lambda (pt) (cons pt 0)) pts) (initial-centroids k pts))))
-      (repeat c repeat-function repeat-initial))))
+    (let ((centroids (initial-centroids k pts))
+          (cpoints (list-map (lambda (pt) (cons pt 0)) pts)))
+      (let ((repeat-function (lambda (data) (cons (cpoints-update (car data) (cdr data)) (get-centroids k (car data)))))
+            (repeat-initial (cons (cpoints-update cpoints centroids) centroids)))
+        (repeat c repeat-function repeat-initial)))))
 
 
+;(define points '((0 0) (1 0) (0 1) (0 2) (2 2) (4 2)))
+;(define cpoints '(((0 0) . 0) ((1 0) . 0) ((0 1) . 0) ((0 2) . 1) ((2 2) . 1) ((42 2) . 2)))
+;(define centroids (initial-centroids 2 points))
 
-(define points '((0 0) (1 0) (0 1) (0 2) (2 2) (4 2)))
-(define cpoints '(((0 0) . 0) ((1 0) . 0) ((0 1) . 0) ((0 2) . 1) ((2 2) . 1) ((42 2) . 2)))
-(define centroids (initial-centroids 2 points))
+;(write 'get-class:)
+;(get-class '((0 0) . 0) points)
 
-(write 'get-class:)
-(get-class '((0 0) . 0) points)
+;(write 'cpoints-update:)
+;(cpoints-update cpoints centroids)
 
-(write 'cpoints-update:)
-(cpoints-update cpoints centroids)
+;(write 'class-size:)
+;(class-size 0 cpoints)
 
-(write 'class-size:)
-(class-size 0 cpoints)
+;(write 'class-sum:)
+;(class-sum 0 cpoints)
 
-(write 'class-sum:)
-(class-sum 0 cpoints)
+;(write 'get-centroid:)
+;(get-centroid 0 cpoints)
 
-(write 'get-centroid:)
-(get-centroid 0 cpoints)
+;(write 'get-centroids:)
+;(get-centroids 3 cpoints)
 
-(write 'get-centroids:)
-(get-centroids 3 cpoints)
+;(write 'repeat:)
+;(repeat 10 (lambda (x) (+ 4 x)) 2)
 
-(write 'repeat:)
-(repeat 10 (lambda (x) (+ 4 x)) 2)
-
-(write 'k-means:)
-(k-means 3 points 5)
+;(write 'k-means:)
+;(k-means 4 points 5)
+;(initial-centroids 3 points)
