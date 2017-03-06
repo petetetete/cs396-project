@@ -47,11 +47,11 @@
 (define get-centroids
   (lambda (k cps)
     (letrec ((helper
-              (lambda (kv cps)
+              (lambda (kv)
                 (if (= kv 0)
                     empty
-                    (cons (get-centroid (- k kv) cps) (helper (- kv 1) cps))))))
-      (helper k cps))))
+                    (cons (get-centroid (- k kv) cps) (helper (- kv 1)))))))
+      (helper k))))
 
 ; repeat: positive-integer procedure any -> any
 ; calls the given procedure c times on the
@@ -68,7 +68,10 @@
 (define k-means
   (lambda (k pts c)
     (let ((centroids (initial-centroids k pts))
-          (cpoints (list-map (lambda (pt) (point->cpoint pt)) pts)))
+          (cpoints (list-map point->cpoint pts)))
       (let ((repeat-function (lambda (data) (cons (cpoints-update (car data) (cdr data)) (get-centroids k (car data)))))
             (repeat-initial (cons (cpoints-update cpoints centroids) centroids)))
         (repeat c repeat-function repeat-initial)))))
+
+(define cpoints '( ((0 0) . 0) ((1 0) . 0) ((0 1) . 0) ((0 2) . 1) ((2 2) . 1) ((42 2) . 2)))
+(get-centroids 2 cpoints)
