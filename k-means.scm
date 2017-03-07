@@ -72,6 +72,3 @@
       (let ((repeat-function (lambda (data) (cons (cpoints-update (car data) (cdr data)) (get-centroids k (car data)))))
             (repeat-initial (cons (cpoints-update cpoints centroids) centroids)))
         (repeat c repeat-function repeat-initial)))))
-
-(define cpoints '( ((0 0) . 0) ((1 0) . 0) ((0 1) . 0) ((0 2) . 1) ((2 2) . 1) ((42 2) . 2)))
-(get-centroids 2 cpoints)
