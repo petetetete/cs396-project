@@ -1,5 +1,4 @@
 (load "list.scm")
-(load "list-compl.scm")
 (load "point.scm")
 (load "cpoint.scm")
 (load "centroids.scm")
@@ -31,7 +30,7 @@
 ; that match the given class
 (define class-sum
   (lambda (cl cps)
-    (let ((conditional-add (lambda (total cp) (if (cpoint-class? cl cp) (p-add (car cp) total)  total))))
+    (let ((conditional-add (lambda (total cp) (if (cpoint-class? cl cp) (p-add (car cp) total) total))))
       (list-foldl conditional-add '(0 0) cps))))
 
 ; get-centroid: positive-integer cpoints -> point
@@ -73,5 +72,18 @@
             (repeat-initial (cons (cpoints-update cpoints centroids) centroids)))
         (repeat c repeat-function repeat-initial)))))
 
+
+(define points1 (generate 2 50 25))
+(define points2 (generate 2 50 30))
+(define points3 (generate 2 125 50))
+(define points4 (generate 2 75 40))
+
+(define points
+  (append (map (lambda (p) (p-add '(-25 -25) p)) points1)
+          (map (lambda (p) (p-add '(25 -25) p)) points2)
+          (map (lambda (p) (p-add '(-25 25) p)) points3)
+          (map (lambda (p) (p-add '(25 25) p)) points4)))
+
 (define cpoints '( ((0 0) . 0) ((1 0) . 0) ((0 1) . 0) ((0 2) . 1) ((2 2) . 1) ((42 2) . 2)))
-(get-centroids 2 cpoints)
+
+(k-means 5 points 100)
