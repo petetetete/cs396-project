@@ -10,5 +10,10 @@ member(X, cons(_Y, Z)) :- member(X, Z).
 get(K, L, V) :- member(pair(K, V), L).
 
 % value/3
-value(X, L, V) :- get(X, L, V).
-value(dis(X, Y), L, V) :- value(X, L, V); value(Y, L, V).
+value(F, L, V) :- get(F, L, V).
+value(con(X, Y), L, true) :- value(X, L, true), value(Y, L, true).
+value(con(X, Y), L, false).
+value(dis(X, Y), L, true) :- value(X, L, true); value(Y, L, true).
+value(dis(X, Y), L, false).
+value(imp(X, Y), L, true) :- value(X, L, false); value(Y, L, true).
+value(imp(X, Y), L, false).
