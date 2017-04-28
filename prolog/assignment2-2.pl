@@ -10,7 +10,7 @@ member(X, cons(_Y, Z)) :- member(X, Z).
 get(K, L, V) :- member(pair(K, V), L).
 
 % value/3
-value(F, L, V) :- get(F, L, V).
+value(F, L, V) :- atom(F), get(F, L, V).
 value(con(X, Y), L, true) :- value(X, L, true), value(Y, L, true).
 value(con(X, Y), L, false).
 value(dis(X, Y), L, true) :- value(X, L, true); value(Y, L, true).
