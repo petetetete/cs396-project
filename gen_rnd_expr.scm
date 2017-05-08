@@ -76,14 +76,14 @@
     (sim_cycle (gen_init_pop pop_size functions terminals max_depth method) max_iter to_kill)))
         
 ; Example variables
-; (define pop_size 30)
-; (define to_kill 5)
-; (define max_depth 4)
-; (define method 'full)
-; (define max_iter 2)
-; (define functions (vector '( + . 2) '( - . 2) '( * . 2 ) '( / . 2 )))
-; (define terminals (vector 1 2 5 10))
+(define pop_size 30)
+(define to_kill 5)
+(define max_depth 4)
+(define method 'full)
+(define max_iter 2)
+(define functions (vector '( + . 2) '( - . 2) '( * . 2 ) '( / . 2 )))
+(define terminals (vector 1 2 5 10))
 
-; (simulation pop_size max_iter to_kill functions terminals max_depth method)
+(simulation pop_size max_iter to_kill functions terminals max_depth method)
 
 

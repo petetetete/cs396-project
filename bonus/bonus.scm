@@ -1,12 +1,20 @@
+; Church Encoding
+
+; c->n: procedure -> number
 (define c->n
   (lambda (church)
     ((church (lambda (a) (+ a 1))) 0)))
-       
-(define n->c
-  (lambda (number)
-    (letrec ((repeat (lambda (c f i) (if (= c 0) i (repeat (- c 1) f (f i))))))
-      (lambda (f) (lambda (x) (repeat number f x))))))
 
+; n->c: number -> procedure
+(define n->c
+  (lambda (num)
+    (letrec ((c->n_loop (lambda (num res)
+                          (if (= num 0)
+                              (eval (quasiquote (lambda (f) (lambda (x) (unquote res)))))
+                              (c->n_loop (- num 1) (quasiquote (f (unquote res))))))))
+      (c->n_loop num 'x))))
+
+; add: procedure -> procedure
 (define add
   (lambda (m)
     (lambda (n)
@@ -14,6 +22,7 @@
         (lambda (x)
           ((m f)((n f) x)))))))
 
+; mul: procedure -> procedure
 (define mul
   (lambda (m)
     (lambda (n)
@@ -21,31 +30,37 @@
         (lambda (x)
           ((n (m f)) x))))))
 
-(define list-index
-  (lambda (n l)
-    (if (empty? l)
-        #f
-        (if (eq? (car l) n)
-            0
-            (let ((result (list-index n (cdr l))))
-              (if (not result)
-                  #f
-                  (+ 1 result)))))))
+
+; Compiler to Lambda
+
+(define q_c_helper
+  (lambda (args body)
+    (if (empty? args)
+        body
+        (quasiquote (lambda ((unquote (car args))) (unquote (q_c_helper (cdr args) body)))))))
 
 (define quoted_compilation
-  (lambda (input)
-    `(lambda (,(caadr input))
-       (lambda (,(cadadr input))
-         ))))
+  (lambda (program)
+    (cond ((number? program) (n->c program)) ; natural number
+          ((and (list? program) (equal? (car program) '*))
+           (quasiquote (( (unquote mul) (unquote (quoted_compilation (cadr program)) )) (unquote (quoted_compilation (caddr program)))))) ; multiplication
+          ((and (list? program) (equal? (car program) '+))
+           (quasiquote (((unquote add) (unquote (quoted_compilation (cadr program)))) (unquote (quoted_compilation (caddr program)))))) ; addition
+          ((and (list? program) (equal? (car program) 'lambda)) (q_c_helper (cadr program) (quoted_compilation (caddr program)))) ; lambda 
+          (else program)))) ; variables
+
+(define lcompile
+  (lambda (program)
+    (eval (quoted_compilation program))))
 
 
-(c->n ((add (n->c 3)) (n->c 1)))
-(c->n ((add (n->c 3)) (n->c 15)))
-(c->n ((add ((mul (n->c 2))(n->c 13))) (n->c 3)))
 
-(cadadr '(lambda (x y) (+ x 1)))
-(quoted_compilation '(lambda (x y) (+ x 1)))
+; Church Encoding Tests
+(c->n ((add (n->c 1)) (n->c 1)))
+(c->n((add ((mul ((add (n->c 1))(n->c 2)) )(n->c 13))) (n->c 3)))
 
-(caaddr '(lambda (x) (+ x 1)))
-
-
+; Compiler to Lambda Tests
+(quoted_compilation '5)
+(quoted_compilation '(* x 2))
+(quoted_compilation '(lambda (x y)(+(* 2 x) y)))
+(c->n (((lcompile '(lambda (x y)(+(* 2 x) y)))(n->c 20))(n->c 2)))
